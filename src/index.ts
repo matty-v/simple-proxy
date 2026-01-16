@@ -60,7 +60,15 @@ function setCorsHeaders(req: Request, res: Response): void {
   }
 
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+
+  // Echo back requested headers from preflight, or use defaults
+  const requestedHeaders = req.headers['access-control-request-headers'] as string | undefined;
+  if (requestedHeaders) {
+    res.setHeader('Access-Control-Allow-Headers', requestedHeaders);
+  } else {
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  }
+
   res.setHeader('Access-Control-Max-Age', '86400');
 }
 
