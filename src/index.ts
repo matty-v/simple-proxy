@@ -14,7 +14,17 @@ const STRIPPED_REQUEST_HEADERS = new Set([
   'host',
   'connection',
   'content-length',
-  'transfer-encoding'
+  'transfer-encoding',
+  // Strip browser-identifying headers so downstream APIs don't detect browser requests
+  'origin',
+  'referer',
+  'sec-fetch-dest',
+  'sec-fetch-mode',
+  'sec-fetch-site',
+  'sec-fetch-user',
+  'sec-ch-ua',
+  'sec-ch-ua-mobile',
+  'sec-ch-ua-platform'
 ]);
 
 const STRIPPED_RESPONSE_HEADERS = new Set([
