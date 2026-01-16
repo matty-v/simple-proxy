@@ -1,0 +1,51 @@
+name: Deploy to Google Cloud Functions
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Deploy to Cloud Functions
+        uses: google-github-actions/deploy-cloud-functions@v3
+        with:
+          name: proxy
+          runtime: nodejs20
+          entry_point: proxy
+          source_dir: .
+          region: ${{ vars.GCP_REGION || 'us-central1' }}
+          environment_variables: |
+            ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}
+            RATE_LIMIT=${{ vars.RATE_LIMIT || '100' }}
+            RATE_WINDOW_MS=${{ vars.RATE_WINDOW_MS || '60000' }}
