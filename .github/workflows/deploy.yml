@@ -46,7 +46,6 @@ jobs:
           entry_point: proxy
           source_dir: .
           region: ${{ vars.GCP_REGION || 'us-central1' }}
-          https_trigger_security_level: secure_always
           environment_variables: |
             ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}
             RATE_LIMIT=${{ vars.RATE_LIMIT || '100' }}
