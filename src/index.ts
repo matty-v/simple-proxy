@@ -23,8 +23,37 @@ const STRIPPED_RESPONSE_HEADERS = new Set([
   'connection'
 ]);
 
-function setCorsHeaders(res: Response): void {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+function getAllowedOrigins(): string[] {
+  const originsEnv = process.env.CORS_ALLOWED_ORIGINS;
+  if (!originsEnv) {
+    return [];
+  }
+  return originsEnv
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(origin => origin.length > 0);
+}
+
+function isOriginAllowed(origin: string | undefined): boolean {
+  if (!origin) return false;
+  const allowedOrigins = getAllowedOrigins();
+  if (allowedOrigins.length === 0) return true; // Empty = allow all
+  return allowedOrigins.includes(origin);
+}
+
+function setCorsHeaders(req: Request, res: Response): void {
+  const origin = req.headers['origin'] as string | undefined;
+  const allowedOrigins = getAllowedOrigins();
+
+  if (allowedOrigins.length === 0) {
+    // No allowlist configured - allow all origins
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (origin && isOriginAllowed(origin)) {
+    // Origin is in allowlist - echo it back
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+  }
+
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.setHeader('Access-Control-Max-Age', '86400');
@@ -32,7 +61,7 @@ function setCorsHeaders(res: Response): void {
 
 export async function proxy(req: Request, res: Response): Promise<void> {
   // Set CORS headers on all responses
-  setCorsHeaders(res);
+  setCorsHeaders(req, res);
 
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {

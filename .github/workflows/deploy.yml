@@ -51,5 +51,6 @@ jobs:
           environment_variables: |
             ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}
             CLIENT_IP_ALLOWLIST=${{ vars.CLIENT_IP_ALLOWLIST }}
+            CORS_ALLOWED_ORIGINS=${{ vars.CORS_ALLOWED_ORIGINS }}
             RATE_LIMIT=${{ vars.RATE_LIMIT || '100' }}
             RATE_WINDOW_MS=${{ vars.RATE_WINDOW_MS || '60000' }}
