@@ -23,7 +23,23 @@ const STRIPPED_RESPONSE_HEADERS = new Set([
   'connection'
 ]);
 
+function setCorsHeaders(res: Response): void {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Max-Age', '86400');
+}
+
 export async function proxy(req: Request, res: Response): Promise<void> {
+  // Set CORS headers on all responses
+  setCorsHeaders(res);
+
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+
   // Get client IP from X-Forwarded-For (Cloud Run) or direct connection
   const forwardedFor = req.headers['x-forwarded-for'];
   const clientIp = typeof forwardedFor === 'string'
