@@ -29,6 +29,12 @@ describe('allowlist', () => {
 
       expect(getAllowedHosts()).toEqual([]);
     });
+
+    it('parses pipe-separated hosts from env', () => {
+      process.env.ALLOWED_HOSTS = 'api.example.com|api.other.com';
+
+      expect(getAllowedHosts()).toEqual(['api.example.com', 'api.other.com']);
+    });
   });
 
   describe('isHostAllowed', () => {
