@@ -19,7 +19,13 @@ const STRIPPED_REQUEST_HEADERS = new Set([
 
 const STRIPPED_RESPONSE_HEADERS = new Set([
   'transfer-encoding',
-  'connection'
+  'connection',
+  'access-control-allow-origin',
+  'access-control-allow-methods',
+  'access-control-allow-headers',
+  'access-control-allow-credentials',
+  'access-control-expose-headers',
+  'access-control-max-age'
 ]);
 
 function getAllowedOrigins(): string[] {
