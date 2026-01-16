@@ -4,7 +4,6 @@ import * as https from 'https';
 import { RateLimiter } from './rate-limiter';
 import { parseTargetUrl } from './url-parser';
 import { isHostAllowed } from './allowlist';
-import { isClientAllowed } from './client-allowlist';
 
 const RATE_LIMIT = parseInt(process.env.RATE_LIMIT || '100', 10);
 const RATE_WINDOW_MS = parseInt(process.env.RATE_WINDOW_MS || '60000', 10);
@@ -69,20 +68,6 @@ export async function proxy(req: Request, res: Response): Promise<void> {
     return;
   }
 
-  // Get client IP from X-Forwarded-For (Cloud Run) or direct connection
-  const forwardedFor = req.headers['x-forwarded-for'];
-  const clientIp = typeof forwardedFor === 'string'
-    ? forwardedFor.split(',')[0].trim()
-    : req.ip || req.socket?.remoteAddress || 'unknown';
-
-  // Client IP allowlist check
-  if (!isClientAllowed(clientIp)) {
-    res.status(403).json({
-      error: 'Client IP not allowed'
-    });
-    return;
-  }
-
   // Rate limit check
   if (!rateLimiter.tryRequest()) {
     const retryAfter = Math.ceil(rateLimiter.getMsUntilReset() / 1000);
@@ -125,7 +110,8 @@ export async function proxy(req: Request, res: Response): Promise<void> {
   }
 
   // Add X-Forwarded-For
-  headers['X-Forwarded-For'] = clientIp;
+  const clientIp = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  headers['X-Forwarded-For'] = typeof clientIp === 'string' ? clientIp : clientIp[0];
 
   try {
     const response = await forwardRequest(targetUrl, req.method, headers, req.body);
