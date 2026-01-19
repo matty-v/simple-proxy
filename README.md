@@ -32,7 +32,7 @@ Environment variables:
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ALLOWED_HOSTS` | Pipe-separated list of allowed target hosts | (required) |
-| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed origins (empty = allow all) | `*` |
+| `CORS_ALLOWED_ORIGINS` | Pipe or comma-separated allowed origins (empty = allow all) | `*` |
 | `RATE_LIMIT` | Max requests per window | `100` |
 | `RATE_WINDOW_MS` | Rate limit window in milliseconds | `60000` |
 
@@ -44,7 +44,7 @@ RATE_LIMIT=100
 RATE_WINDOW_MS=60000
 ```
 
-> **Note:** Use `|` (pipe) as the delimiter for `ALLOWED_HOSTS`. Commas don't work with the GCF deploy action.
+> **Note:** Use `|` (pipe) as the delimiter for `ALLOWED_HOSTS` and `CORS_ALLOWED_ORIGINS` when deploying to GCF. Commas don't work with the GCF deploy action.
 
 ## Local Development
 

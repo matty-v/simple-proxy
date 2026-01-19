@@ -39,13 +39,13 @@ This is an HTTP proxy server deployed as a Google Cloud Function. It forwards re
 
 ## Environment Variables
 
-Use `|` (pipe) delimiter for lists in `ALLOWED_HOSTS` - commas break GCF deploy parsing.
+Use `|` (pipe) delimiter for lists - commas break GCF deploy parsing.
 
 ```
-ALLOWED_HOSTS=api.example.com|api.other.com   # Pipe-separated, not comma
-CORS_ALLOWED_ORIGINS=https://myapp.com        # Comma-separated (optional)
-RATE_LIMIT=100                                # Requests per window
-RATE_WINDOW_MS=60000                          # Window in milliseconds
+ALLOWED_HOSTS=api.example.com|api.other.com      # Pipe-separated (comma also supported)
+CORS_ALLOWED_ORIGINS=https://myapp.com|https://localhost:3000  # Pipe-separated (comma also supported)
+RATE_LIMIT=100                                   # Requests per window
+RATE_WINDOW_MS=60000                             # Window in milliseconds
 ```
 
 ## Deployment

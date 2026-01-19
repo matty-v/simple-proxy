@@ -38,18 +38,20 @@ const STRIPPED_RESPONSE_HEADERS = new Set([
   'access-control-max-age'
 ]);
 
-function getAllowedOrigins(): string[] {
+export function getAllowedOrigins(): string[] {
   const originsEnv = process.env.CORS_ALLOWED_ORIGINS;
   if (!originsEnv) {
     return [];
   }
+  // Support both comma and pipe as delimiters (pipe works better with GCF deploy)
+  const delimiter = originsEnv.includes('|') ? '|' : ',';
   return originsEnv
-    .split(',')
+    .split(delimiter)
     .map(origin => origin.trim())
     .filter(origin => origin.length > 0);
 }
 
-function isOriginAllowed(origin: string | undefined): boolean {
+export function isOriginAllowed(origin: string | undefined): boolean {
   if (!origin) return false;
   const allowedOrigins = getAllowedOrigins();
   if (allowedOrigins.length === 0) return true; // Empty = allow all
